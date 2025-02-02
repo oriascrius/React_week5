@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';  // 引入 Swal 提示訊息
+import '@/assets/products/ProductList.css';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { fetchCartData } from '@/store/cartSlice';
 
 interface Product {
   id: string;
@@ -19,6 +22,7 @@ function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isAddingToCart, setIsAddingToCart] = useState<string>(''); // 追蹤正在加入購物車的商品 ID
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});  // 新增：儲存每個商品的數量
+  const dispatch = useAppDispatch();  // 使用 useAppDispatch
 
   const API_BASE = import.meta.env.VITE_API_URL;
   const API_PATH = import.meta.env.VITE_API_PATH;
@@ -50,14 +54,61 @@ function ProductList() {
   // 加入購物車
   const addToCart = async (id: string) => {
     setIsAddingToCart(id);
+    
+    // 創建動畫效果
+    const button = document.querySelector(`button[data-product-id="${id}"]`);
+    const cart = document.querySelector('.bi-cart3');
+    
+    if (button && cart) {
+      const buttonRect = button.getBoundingClientRect();
+      const cartRect = cart.getBoundingClientRect();
+      
+      // 創建動畫點
+      const dot = document.createElement('div');
+      dot.className = 'flying-dot';
+      document.body.appendChild(dot);
+      
+      // 設置起始位置
+      dot.style.top = `${buttonRect.top + buttonRect.height / 2}px`;
+      dot.style.left = `${buttonRect.left + buttonRect.width / 2}px`;
+      
+      // 添加動畫
+      const animation = dot.animate([
+        { 
+          top: `${buttonRect.top + buttonRect.height / 2}px`,
+          left: `${buttonRect.left + buttonRect.width / 2}px`,
+          opacity: 1,
+          transform: 'scale(1)'
+        },
+        { 
+          top: `${cartRect.top + cartRect.height / 2}px`,
+          left: `${cartRect.left + cartRect.width / 2}px`,
+          opacity: 0,
+          transform: 'scale(0.5)'
+        }
+      ], {
+        duration: 800,
+        easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+      });
+
+      // 當動畫完成後移除元素
+      animation.onfinish = () => dot.remove();
+    }
+
     try {
       const data = {
-        product_id: id,
-        qty: quantities[id],  // 使用選擇的數量
+        data: {
+          product_id: id,
+          qty: quantities[id]
+        }
       };
-      const res = await axios.post(`${API_BASE}/api/${API_PATH}/cart`, { data });
+      
+      const res = await axios.post(`${API_BASE}/api/${API_PATH}/cart`, data);
       
       if (res.data.success) {
+        // 使用 dispatch 更新購物車
+        await dispatch(fetchCartData());
+        
         Swal.fire({
           icon: 'success',
           title: '成功加入購物車',
@@ -171,7 +222,9 @@ function ProductList() {
                 const res = await axios.post(`${API_BASE}/api/${API_PATH}/cart`, { data });
                 
                 if (res.data.success) {
-                  // 顯示成功訊息
+                  // 使用 dispatch 更新購物車
+                  await dispatch(fetchCartData());
+                  
                   Swal.fire({
                     icon: 'success',
                     title: '成功加入購物車',
@@ -292,6 +345,7 @@ function ProductList() {
                     <button 
                       type="button" 
                       className="btn btn-outline-danger"
+                      data-product-id={product.id}
                       onClick={() => addToCart(product.id)}
                       disabled={isAddingToCart === product.id}
                     >

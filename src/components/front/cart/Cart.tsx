@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { fetchCartData } from '@/store/cartSlice';
 
 // 定義購物車項目的介面
 interface CartItem {
@@ -27,7 +29,7 @@ interface CartData {
 
 function Cart() {
   const navigate = useNavigate();
-  // 儲存購物車資料的 state
+  const dispatch = useAppDispatch();
   const [cartData, setCartData] = useState<CartData>({
     final_total: 0,
     total: 0,
@@ -66,6 +68,7 @@ function Cart() {
         const res = await axios.delete(`${API_BASE}/api/${API_PATH}/cart/${id}`);
         if (res.data.success) {
           await getCart();
+          await dispatch(fetchCartData());
           Swal.fire({
             icon: 'success',
             title: '商品已刪除',
@@ -100,6 +103,7 @@ function Cart() {
         const res = await axios.delete(`${API_BASE}/api/${API_PATH}/carts`);
         if (res.data.success) {
           await getCart();
+          await dispatch(fetchCartData());
           Swal.fire({
             icon: 'success',
             title: '購物車已清空',
@@ -121,7 +125,7 @@ function Cart() {
   // 更新購物車數量
   const updateCartItem = async (item: CartItem, qty: number) => {
     if (qty < 1) return;
-    setIsUpdating(item.id); // 設置更新狀態
+    setIsUpdating(item.id);
     
     try {
       const data = {
@@ -132,6 +136,7 @@ function Cart() {
       
       if (res.data.success) {
         await getCart();
+        await dispatch(fetchCartData());
       }
     } catch (error) {
       console.error('更新數量失敗:', error);
@@ -142,11 +147,10 @@ function Cart() {
         timer: 1500
       });
     } finally {
-      setIsUpdating(''); // 清除更新狀態
+      setIsUpdating('');
     }
   };
 
-  // 元件載入時取得購物車資料
   useEffect(() => {
     getCart();
   }, []);
