@@ -75,6 +75,7 @@ function CheckoutForm() {
       <div className="mb-3">
         <label htmlFor="email" className="form-label">Email*</label>
         <input 
+          id="email"
           type="email"
           className={`form-control ${errors.email ? 'is-invalid' : ''}`}
           {...register('email', {
@@ -91,6 +92,7 @@ function CheckoutForm() {
       <div className="mb-3">
         <label htmlFor="name" className="form-label">姓名*</label>
         <input 
+          id="name"
           type="text"
           className={`form-control ${errors.name ? 'is-invalid' : ''}`}
           {...register('name', {
@@ -107,6 +109,7 @@ function CheckoutForm() {
       <div className="mb-3">
         <label htmlFor="tel" className="form-label">電話*</label>
         <input 
+          id="tel"
           type="tel"
           className={`form-control ${errors.tel ? 'is-invalid' : ''}`}
           {...register('tel', {
@@ -123,6 +126,7 @@ function CheckoutForm() {
       <div className="mb-3">
         <label htmlFor="address" className="form-label">地址*</label>
         <input 
+          id="address"
           type="text"
           className={`form-control ${errors.address ? 'is-invalid' : ''}`}
           {...register('address', {
@@ -135,6 +139,7 @@ function CheckoutForm() {
       <div className="mb-3">
         <label htmlFor="message" className="form-label">留言</label>
         <textarea 
+          id="message"
           className="form-control"
           rows={3}
           {...register('message')}

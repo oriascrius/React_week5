@@ -5,11 +5,6 @@ function Success() {
   const navigate = useNavigate();
   const orderId = location.state?.orderId;
 
-  // 加入 console.log 來除錯
-  console.log('Success page state:', location.state);
-  console.log('orderId:', orderId);
-  console.log("11111111111111111");
-
   // 如果沒有訂單編號，代表是直接訪問，將其導回產品頁
   if (!orderId) {
     return <Navigate to="/products" replace />;

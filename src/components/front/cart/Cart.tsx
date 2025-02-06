@@ -258,11 +258,11 @@ function Cart() {
         </tbody>
         <tfoot>
           <tr>
-            <td colSpan={4} className="text-end">總計</td>
+            <td colSpan={5} className="text-end">總計</td>
             <td className="text-end">${cartData.total}</td>
           </tr>
           <tr>
-            <td colSpan={4} className="text-end text-success">折扣價</td>
+            <td colSpan={5} className="text-end text-success">折扣價</td>
             <td className="text-end text-success">${cartData.final_total}</td>
           </tr>
         </tfoot>
